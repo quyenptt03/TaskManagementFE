@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
-import { FormData, RegisterSchema } from "../types";
-import InputField from "../InputField";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FormData, LoginSchema } from "../../../../types/auth";
+import InputField from "../../../../components/form-controls/InputField";
+import { useSignIn } from "../../../../api/auth/query";
 
 function LoginForm() {
   const {
@@ -10,10 +11,13 @@ function LoginForm() {
     formState: { errors },
     setError,
   } = useForm<FormData>({
-    resolver: zodResolver(RegisterSchema),
+    resolver: zodResolver(LoginSchema),
   });
 
+  const signIn = useSignIn();
+
   const onSubmit = async (data: FormData) => {
+    signIn.mutate(data);
     console.log("SUCCESS", data);
   };
 
@@ -21,9 +25,9 @@ function LoginForm() {
     <div className="bg-white p-10 rounded-lg">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid col-auto w-80 border-black">
-          <h1 className="text-2xl font-semibold mb-4 text-center">Register</h1>
+          <h1 className="text-2xl font-medium mb-4 text-center">Login</h1>
 
-          <label htmlFor="email" className="text-base capitalize">
+          <label htmlFor="email" className="text-base font-medium capitalize">
             Email
           </label>
           <InputField
@@ -34,7 +38,10 @@ function LoginForm() {
             error={errors.email}
           />
 
-          <label htmlFor="password" className="text-base capitalize mt-3">
+          <label
+            htmlFor="password"
+            className="text-base font-medium capitalize mt-3"
+          >
             Password
           </label>
           <InputField
@@ -45,26 +52,12 @@ function LoginForm() {
             error={errors.password}
           />
 
-          <label
-            htmlFor="confirmPassword"
-            className="text-base capitalize mt-3"
-          >
-            Confirm Password
-          </label>
-          <InputField
-            type="password"
-            placeholder="Confirm Password"
-            name="confirmPassword"
-            register={register}
-            error={errors.confirmPassword}
-          />
-
           <button
             type="submit"
             className="mt-5 px-8 py-4 font-semibold border border-solid border-transparent rounded-lg laptop:px-10 laptop:py-5 3xl:px-12 3xl:py-6 
             text-white bg-black hover:text-black hover:bg-white hover:border-black transition-all duration-200 ease-linear"
           >
-            Register
+            Login
           </button>
         </div>
       </form>

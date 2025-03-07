@@ -1,4 +1,4 @@
-import { FormFieldProps } from "../types";
+import { FormFieldProps } from "../../../types/auth";
 
 const InputField: React.FC<FormFieldProps> = ({
   type,

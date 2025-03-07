@@ -51,3 +51,12 @@ export const LoginSchema: ZodType<FormData> = z.object({
     .min(8, { message: "Password is too short" })
     .max(50, { message: "Password is too long" }),
 });
+
+export const SignInAPIResponseSchema = z.object({
+  data: z.string(), // Chấp nhận kiểu string thay vì object
+  status: z.number(),
+  statusText: z.string(),
+  headers: z.object({}),
+  config: z.object({}),
+  request: z.any(),
+});
