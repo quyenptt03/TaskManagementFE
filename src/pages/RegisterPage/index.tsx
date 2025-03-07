@@ -1,9 +1,11 @@
+import RegisterForm from "../../components/form-controls/RegisterForm";
+
 const RegisterPage = () => {
-    return (
-      <>
-       <h1 className="m-10 text-3xl">Register page</h1> 
-      </>
-    );
-  };
-  
-  export default RegisterPage;
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-between p-24 bg-[#D9EAFD]">
+      <RegisterForm />;
+    </div>
+  );
+};
+
+export default RegisterPage;
