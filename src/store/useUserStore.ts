@@ -2,12 +2,15 @@ import { create, StateCreator } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface User {
-  accessToken: string;
+  userName: string;
+  email: string;
+  role: string[];
+  accessToken?: string;
 }
 
 interface UserState {
   user: User | null;
-  setCredentials: (user: User) => void;
+  setCredentials: (user: any) => void;
   removeCredentials: () => void;
 }
 

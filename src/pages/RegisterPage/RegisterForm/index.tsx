@@ -2,19 +2,22 @@ import { useForm } from "react-hook-form";
 import { FormData, RegisterSchema } from "../../../types/auth";
 import InputField from "../../../components/form-controls/InputField";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSignUp } from "../../../api/auth/query";
+import Button from "../../../components/Button";
 
 function LoginForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<FormData>({
     resolver: zodResolver(RegisterSchema),
   });
 
+  const signUp = useSignUp();
+
   const onSubmit = async (data: FormData) => {
-    console.log("SUCCESS", data);
+    signUp.mutate(data);
   };
 
   return (
@@ -58,14 +61,13 @@ function LoginForm() {
             register={register}
             error={errors.confirmPassword}
           />
-
-          <button
-            type="submit"
-            className="mt-5 px-8 py-4 font-semibold border border-solid border-transparent rounded-lg laptop:px-10 laptop:py-5 3xl:px-12 3xl:py-6 
-            text-white bg-black hover:text-black hover:bg-white hover:border-black transition-all duration-200 ease-linear"
-          >
-            Register
-          </button>
+          <span className="mb mt-5">
+            Already have an Account ?{" "}
+            <a href="/login" className="font-medium hover:text-[#3674B5]">
+              Login
+            </a>
+          </span>
+          <Button theme="filled">Register</Button>
         </div>
       </form>
     </div>

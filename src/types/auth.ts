@@ -53,10 +53,24 @@ export const LoginSchema: ZodType<FormData> = z.object({
 });
 
 export const SignInAPIResponseSchema = z.object({
-  data: z.string(), // Chấp nhận kiểu string thay vì object
-  status: z.number(),
-  statusText: z.string(),
-  headers: z.object({}),
-  config: z.object({}),
-  request: z.any(),
+  message: z.string(),
+  data: z.object({
+    userName: z.string(),
+    email: z.string(),
+    role: z.array(z.string()),
+  }),
+  accessToken: z.string(),
+});
+
+export const SignUpAPIResponseSchema = z.object({
+  message: z.string(),
+  data: z.object({
+    userName: z.string(),
+    email: z.string(),
+    role: z.string(),
+  }),
+});
+
+export const SignOutAPIResponseSchema = z.object({
+  message: z.string(),
 });

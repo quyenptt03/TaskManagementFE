@@ -1,16 +1,18 @@
-import axios from "axios";
-// import { useUserStore } from "../store/useUserStore";
+//@ts-ignore
+import axios, { CreateAxiosDefaults } from "axios";
+import Cookies from "js-cookie";
 
 export const URL = "https://localhost:7079";
-
-const axiosClient = axios.create({
+const baseConfig: CreateAxiosDefaults = {
   baseURL: URL,
   headers: {
     "Content-Type": "application/json",
   },
-});
+};
 
-axiosClient.interceptors.request.use(
+const instanceWithoutInterceptors = axios.create(baseConfig);
+
+instanceWithoutInterceptors.interceptors.request.use(
   function (config) {
     return config;
   },
@@ -19,9 +21,8 @@ axiosClient.interceptors.request.use(
   }
 );
 
-axiosClient.interceptors.response.use(
+instanceWithoutInterceptors.interceptors.response.use(
   function (response) {
-    console.log({ response });
     return response;
   },
   function (error) {
@@ -38,4 +39,40 @@ axiosClient.interceptors.response.use(
   }
 );
 
-export default axiosClient;
+const instance = axios.create(baseConfig);
+
+instance.interceptors.request.use(
+  function (config) {
+    const accessToken = Cookies.get("token");
+
+    if (accessToken) {
+      config.headers = config.headers ?? {};
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
+
+instance.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    console.log({ error });
+    const { config, status, data } = error.response;
+    if (
+      (config.url === "/api/users/register" && status === 400) ||
+      (config.url === "/api/users/login" && status === 401)
+    ) {
+      const newError = data.msg;
+      throw new Error(newError);
+    }
+    return Promise.reject(error);
+  }
+);
+
+export { instance, instanceWithoutInterceptors };

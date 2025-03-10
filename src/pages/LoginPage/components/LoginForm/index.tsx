@@ -3,13 +3,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormData, LoginSchema } from "../../../../types/auth";
 import InputField from "../../../../components/form-controls/InputField";
 import { useSignIn } from "../../../../api/auth/query";
+import Button from "../../../../components/Button";
 
 function LoginForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<FormData>({
     resolver: zodResolver(LoginSchema),
   });
@@ -18,7 +18,6 @@ function LoginForm() {
 
   const onSubmit = async (data: FormData) => {
     signIn.mutate(data);
-    console.log("SUCCESS", data);
   };
 
   return (
@@ -51,14 +50,13 @@ function LoginForm() {
             register={register}
             error={errors.password}
           />
-
-          <button
-            type="submit"
-            className="mt-5 px-8 py-4 font-semibold border border-solid border-transparent rounded-lg laptop:px-10 laptop:py-5 3xl:px-12 3xl:py-6 
-            text-white bg-black hover:text-black hover:bg-white hover:border-black transition-all duration-200 ease-linear"
-          >
-            Login
-          </button>
+          <span className="mb mt-5">
+            Don't have an account?{" "}
+            <a href="/register" className="font-medium hover:text-[#3674B5]">
+              Register
+            </a>
+          </span>
+          <Button theme="filled">Login</Button>
         </div>
       </form>
     </div>
