@@ -21,7 +21,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="bg-white p-10 rounded-lg">
+    <div className="bg-white p-10 rounded-s-lg h-full w-full">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid col-auto w-80 border-black">
           <h1 className="text-2xl font-medium mb-4 text-center">Login</h1>

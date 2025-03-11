@@ -19,12 +19,10 @@ export function api<Request, Response>({
   responseSchema,
 }: APICallPayload<Request, Response>) {
   return async (requestData: Request) => {
-    // Validate request data
     if (requestSchema) {
       requestSchema.parse(requestData);
     }
 
-    // Prepare API call
     let url = path;
     let data = null;
 
