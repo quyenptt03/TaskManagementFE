@@ -26,7 +26,6 @@ instanceWithoutInterceptors.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log({ error });
     const { config, status, data } = error.response;
     if (
       (config.url === "/api/users/register" && status === 400) ||
@@ -62,7 +61,6 @@ instance.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log({ error });
     const { config, status, data } = error.response;
     if (
       (config.url === "/api/users/register" && status === 400) ||

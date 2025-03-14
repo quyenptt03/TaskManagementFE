@@ -3,4 +3,9 @@ export const API_ENDPOINT = {
   SIGN_UP: "api/users/register",
   SIGN_OUT: "api/users/logout",
   USERS: "api/users",
+  CATEGORIES: "api/categories",
+  TASKS: "api/tasks",
+  LABELS: "api/labels",
+  TASKCOMMENTS: "api/task-comments",
+  TASKLABELS: "api/task-labels",
 };

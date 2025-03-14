@@ -1,5 +1,5 @@
 import LoginForm from "./components/LoginForm";
-import bg from "../../assests/sea.jpg";
+import bg from "../../assets/sea.jpg";
 const LoginPage = () => {
   return (
     <div className="flex h-full flex-col items-center justify-between p-32 bg-[#D9EAFD]">

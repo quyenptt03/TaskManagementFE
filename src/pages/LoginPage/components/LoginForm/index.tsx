@@ -1,9 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormData, LoginSchema } from "../../../../types/auth";
-import InputField from "../../../../components/form-controls/InputField";
+import { InputField, Button } from "../../../../components";
 import { useSignIn } from "../../../../api/auth/query";
-import Button from "../../../../components/Button";
 
 function LoginForm() {
   const {
@@ -51,7 +50,7 @@ function LoginForm() {
             error={errors.password}
           />
           <span className="mb mt-5">
-            Don't have an account?{" "}
+            Don't have an account ?{" "}
             <a href="/register" className="font-medium hover:text-[#3674B5]">
               Register
             </a>
