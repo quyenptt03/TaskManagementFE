@@ -26,6 +26,7 @@ import {
   useGetAllTaskLabels,
 } from "../../../../api/taskLabel/query";
 import { useGetAllTaskComments } from "../../../../api/taskComment/query";
+import { ConfirmDialog } from "../../../../components";
 
 const TaskTable = () => {
   const { user } = useUserStore();
@@ -37,24 +38,26 @@ const TaskTable = () => {
     labelId: "",
     isCompleted: "",
   });
+  const [taskIdToDelete, setTaskIdToDelete] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
 
   const deleteTask = useDeleteTask();
-  const { data: userTask } = useGetTask(3);
-  console.log({ userTask });
+  // const { data: userTask } = useGetTask(3);
+  // console.log({ userTask });
 
   //@ts-ignore
   const userId = user.user?.id || 0;
   const { data: tasks, refetch } = useGetByUserId(userId, filters);
-  const getAllCategories = useGetAllCategories();
-  const getAllLabel = useGetAllLabels();
-  const getAllTaskLebals = useGetAllTaskLabels();
-  const getAllComments = useGetAllTaskComments();
-  console.log({
-    categories: getAllCategories.data,
-    labels: getAllLabel.data,
-    taskLabels: getAllTaskLebals.data,
-    taskComments: getAllComments.data,
-  });
+  // const getAllCategories = useGetAllCategories();
+  // const getAllLabel = useGetAllLabels();
+  // const getAllTaskLebals = useGetAllTaskLabels();
+  // const getAllComments = useGetAllTaskComments();
+  // console.log({
+  //   categories: getAllCategories.data,
+  //   labels: getAllLabel.data,
+  //   taskLabels: getAllTaskLebals.data,
+  //   taskComments: getAllComments.data,
+  // });
 
   useEffect(() => {
     refetch();
@@ -93,8 +96,17 @@ const TaskTable = () => {
     setFilters((prev) => ({ ...prev, [name as string]: value }));
   };
 
-  const handleDelete = (taskId: number) => {
-    deleteTask.mutate(taskId);
+  const openDeleteDialog = (taskId: number) => {
+    setTaskIdToDelete(taskId);
+    setOpen(true);
+  };
+
+  const handleDelete = () => {
+    if (taskIdToDelete !== null) {
+      deleteTask.mutate(taskIdToDelete);
+      setTaskIdToDelete(null);
+    }
+    setOpen(false);
   };
 
   return (
@@ -208,7 +220,16 @@ const TaskTable = () => {
                     ))}
                   </TableCell>
                   <TableCell>
-                    <button onClick={() => handleDelete(task.id)}>❌</button>
+                    <button onClick={() => openDeleteDialog(task.id)}>
+                      ❌
+                    </button>
+                    <ConfirmDialog
+                      open={open}
+                      title="Delete Confirmation"
+                      message="Are you sure you want to delete this task?"
+                      onConfirm={() => handleDelete()}
+                      onCancel={() => setOpen(false)}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
