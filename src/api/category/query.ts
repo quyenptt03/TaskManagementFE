@@ -7,6 +7,7 @@ function useGetAllCategories() {
     queryFn: () => {
       return CategoryAPI.getAll();
     },
+    staleTime: 5 * 60 * 1000,
   });
 }
 

@@ -7,6 +7,7 @@ function useGetAllLabels() {
     queryFn: () => {
       return TaskLabelAPI.getAllLabels();
     },
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -16,6 +17,7 @@ function useGetAllTaskLabels() {
     queryFn: () => {
       return TaskLabelAPI.getAllTaskLabels();
     },
+    staleTime: 5 * 60 * 1000,
   });
 }
 

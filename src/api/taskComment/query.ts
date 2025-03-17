@@ -7,6 +7,7 @@ function useGetAllTaskComments() {
     queryFn: () => {
       return TaskCommentAPI.getAll();
     },
+    staleTime: 5 * 60 * 1000,
   });
 }
 
