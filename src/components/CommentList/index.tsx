@@ -35,7 +35,6 @@ const CommentList = ({ taskId }: { taskId: any }) => {
 
   const handleDelete = async () => {
     if (commentIdToDelete) {
-      console.log("delete comment" + commentIdToDelete);
       deleteComment.mutate(commentIdToDelete);
     }
     setOpenConfirm(false);
@@ -43,10 +42,10 @@ const CommentList = ({ taskId }: { taskId: any }) => {
   return (
     <div>
       <h3 className="font-semibold">Comments</h3>
-      <div>
+      <div className="flex">
         <TextField
           placeholder="Add comment"
-          className="w-full"
+          className="w-full mr-2"
           value={newComment.content}
           onChange={(e: any) =>
             setNewComment({
@@ -59,7 +58,7 @@ const CommentList = ({ taskId }: { taskId: any }) => {
         <Button
           theme="base"
           type="button"
-          className="w-1/3 text-sm 3xl:px-10 laptop:py-2"
+          className="w-fit mt-0 text-sm 3xl:px-10 laptop:py-2"
           onClick={() => handleAddComment(newComment)}
         >
           Add
