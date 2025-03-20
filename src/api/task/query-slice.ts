@@ -5,8 +5,10 @@ import {
   GetByUserIdRequestSchema,
   GetByIdAPIRequestSchema,
   GetByIdAPIResponseSchema,
-  CreateTaskRequestSchema,
-  CreateTaskResponseSchema,
+  CreateTaskAPIRequestSchema,
+  CreateTaskAPIResponseSchema,
+  UpdateAPIRequestSchema,
+  UpdateAPIResponseSchema,
   DeleteAPIResponseSchema,
   DeleteAPIRequestSchema,
 } from "../../types/task";
@@ -17,8 +19,10 @@ const GetAllResponse = GetAllAPIResponseSchema;
 const GetByUserIdRequest = GetByUserIdRequestSchema;
 const GetByIdRequest = GetByIdAPIRequestSchema;
 const GetByIdResponse = GetByIdAPIResponseSchema;
-const CreateTaskRequest = CreateTaskRequestSchema;
-const CreateTaskResponse = CreateTaskResponseSchema;
+const CreateTaskRequest = CreateTaskAPIRequestSchema;
+const CreateTaskResponse = CreateTaskAPIResponseSchema;
+const UpdateTaskRequest = UpdateAPIRequestSchema;
+const UpdateTaskResponse = UpdateAPIResponseSchema;
 const DeleteTaskRequest = DeleteAPIRequestSchema;
 const DeleteTaskResponse = DeleteAPIResponseSchema;
 
@@ -41,10 +45,7 @@ const GetByUserId = api<
   path: (params) => {
     const { userId, ...filters } = params;
     const query = new URLSearchParams(filters).toString();
-    console.log({ userId, filters });
-    console.log(typeof filters);
     const p = `${API_ENDPOINT.TASKS}/user/${userId}?${query}`;
-    console.log({ p });
     return p;
   },
   requestSchema: GetByUserIdRequest,
@@ -74,6 +75,17 @@ const CreateTask = api<
   type: "private",
 });
 
+const UpdateTask = api<
+  z.infer<typeof UpdateTaskRequest>,
+  z.infer<typeof UpdateTaskResponse>
+>({
+  method: "PUT",
+  path: (task) => `${API_ENDPOINT.TASKS}/${task.id}`,
+  requestSchema: UpdateTaskRequest,
+  responseSchema: UpdateTaskResponse,
+  type: "private",
+});
+
 const DeleteTask = api<
   z.infer<typeof DeleteTaskRequest>,
   z.infer<typeof DeleteTaskResponse>
@@ -90,5 +102,6 @@ export const TaskAPI = {
   GetByUserId,
   GetById,
   CreateTask,
+  UpdateTask,
   DeleteTask,
 };

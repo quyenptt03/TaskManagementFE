@@ -1,71 +1,183 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
-  MenuItem,
-  Select,
   FormControl,
   InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
+import { useForm } from "react-hook-form";
+import { useUpdateTask } from "../../../../api/task/query";
 import {
-  CreateTaskSchema,
-  FormData,
-  Task,
-  TaskSchema,
-} from "../../../../types/task";
-import { FormField, InputField } from "../../../../components";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldError, useForm, UseFormRegister } from "react-hook-form";
-import { Button } from "../../../../components";
+  useAssignLabel,
+  useRemoveLabel,
+} from "../../../../api/taskLabel/query";
+import { CreateTaskSchema, FormData } from "../../../../types/task";
+import {
+  Button,
+  CommentSection,
+  FormField,
+  AddLabelsSection,
+  AttachmentSection,
+} from "../../../../components";
+import {
+  useGetAllAttachments,
+  useDeleteAttachment,
+  useUploadAttachments,
+} from "../../../../api/taskAttachment/query";
 
-interface CreateTaskDialogProps {
-  data: any;
+interface CreateTaskDialogBaseProps {
+  data?: any;
   open: boolean;
   onClose: () => void;
-  onCreate: (task: any) => void;
 }
+
+interface CreateTaskDialogViewProps extends CreateTaskDialogBaseProps {
+  onView: (task: any) => void;
+  onCreate?: never;
+  onUpdate?: never;
+  task: any;
+}
+
+interface CreateTaskDialogCreateProps extends CreateTaskDialogBaseProps {
+  onCreate: (task: any) => void;
+  onView?: never;
+  onUpdate?: never;
+  task?: never;
+}
+
+interface CreateTaskDialogUpdateProps extends CreateTaskDialogBaseProps {
+  onUpdate: (task: any) => void;
+  onView?: never;
+  onCreate?: never;
+  task: any;
+}
+
+type CreateTaskDialogProps =
+  | CreateTaskDialogCreateProps
+  | CreateTaskDialogUpdateProps
+  | CreateTaskDialogViewProps;
 
 const Info: React.FC<CreateTaskDialogProps> = ({
   open,
   onClose,
+  onView,
   onCreate,
+  onUpdate,
   data,
+  task,
 }) => {
-  const [task, setTask] = useState({
-    title: "",
-    description: "",
-    categoryId: "",
-    isCompleted: false,
-  });
-
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
+    clearErrors,
+    setValue,
   } = useForm<FormData>({
     resolver: zodResolver(CreateTaskSchema),
   });
 
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setTask((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const updateTask = useUpdateTask();
+  const assignLabel = useAssignLabel();
+  const removeLabel = useRemoveLabel();
+  const uploadAttachments = useUploadAttachments();
+  const deleteAttachment = useDeleteAttachment();
+
+  useEffect(() => {
+    if (task) {
+      setValue("title", task.title);
+      setValue("description", task.description);
+      setValue("categoryId", task.categoryId);
+      setValue("isCompleted", task.isCompleted.toString());
+      setValue(
+        "labels",
+        task.labels.map((label: any) => label)
+      );
+    } else {
+      reset();
+    }
+  }, [task, setValue, reset]);
+
+  const handleClose = () => {
+    if (onCreate) {
+      clearErrors();
+      reset();
+    }
+    clearErrors();
+    onClose();
   };
 
-  const onSubmit = async (data: FormData) => {
-    console.log("submit form", data);
-    // onCreate(task);
-    // onClose();
+  const onSubmit = async (data: any) => {
+    if (data.isCompleted) {
+      data.isCompleted = JSON.parse(data.isCompleted);
+    }
+
+    const selectedLabels = data.labels || [];
+    const existingLabels = task ? task.labels.map((label: any) => label) : [];
+
+    const newLabels = selectedLabels.filter(
+      (label: any) =>
+        !existingLabels.some(
+          (existingLabel: any) => existingLabel.id === label.id
+        )
+    );
+
+    const labelsToRemove = existingLabels.filter(
+      (label: any) =>
+        !selectedLabels.some(
+          (selectedLabel: any) => selectedLabel.id === label.id
+        )
+    );
+
+    console.log({ selectedLabels, existingLabels, newLabels, labelsToRemove });
+
+    if (task && onUpdate) {
+      await updateTask.mutateAsync({ ...task, ...data });
+      onUpdate(data);
+
+      newLabels.forEach((label: any) => {
+        assignLabel.mutate({ taskId: task.id, labelId: label.id });
+      });
+
+      labelsToRemove.forEach((label: any) => {
+        removeLabel.mutate({ taskId: task.id, labelId: label.id });
+      });
+    } else if (onCreate) {
+      const createdTask = await onCreate(data);
+      console.log(createdTask);
+      // console.log({ data });
+      // onCreate(data);
+
+      // if (createdTask && createdTask.id) {
+      //   assignLabel.mutate({ taskId: createdTask.id, labelIds });
+      // }
+
+      reset();
+    }
+
+    onClose();
+  };
+
+  const handleUploadAttachments = (files: File[]) => {
+    console.log("Uploading files:", files);
+    uploadAttachments.mutate({ files, taskId: task?.id });
+  };
+
+  const handleDeleteAttachments = (id: number) => {
+    console.log("Removing attachment with ID:", id);
+    deleteAttachment.mutate(id);
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Add Task</DialogTitle>
+      <DialogTitle className="font-semibold">
+        {onCreate ? "Create task" : onUpdate ? "Update Task" : "View Task"}
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <FormField
@@ -82,67 +194,84 @@ const Info: React.FC<CreateTaskDialogProps> = ({
             register={register}
             error={errors.description}
           />
-          {/* <TextField
-          fullWidth
-          margin="dense"
-          label="Title"
-          name="title"
-          value={task.title}
-          onChange={handleChange}
-        /> */}
-          {/* <TextField
-          fullWidth
-          margin="dense"
-          label="Description"
-          name="description"
-          value={task.description}
-          onChange={handleChange}
-          multiline
-          rows={3}
-        /> */}
           <FormControl fullWidth margin="dense">
             <InputLabel>Category</InputLabel>
             <Select
-              name="categoryId"
-              value={task.categoryId}
-              onChange={handleChange}
-              inputRef={register("categoryId").ref}
+              {...register("categoryId")}
+              defaultValue={task ? task.categoryId : ""}
               error={!!errors.categoryId}
             >
               <MenuItem value="">Choose category</MenuItem>
-              {data?.map((category: any) => (
+              {data.categories?.map((category: any) => (
                 <MenuItem key={category.id} value={category.id}>
                   {category.name}
                 </MenuItem>
               ))}
-              {/* <MenuItem value="1">Work</MenuItem>
-            <MenuItem value="2">Study</MenuItem> */}
             </Select>
-            {errors.isCompleted && <p>{errors.isCompleted.message}</p>}
+            <p>{errors.categoryId && errors.categoryId.message}</p>
           </FormControl>
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Status</InputLabel>
-            <Select
-              name="isCompleted"
-              value={task.isCompleted}
-              onChange={handleChange}
-              inputRef={register("isCompleted").ref}
-              error={!!errors.categoryId}
-            >
-              <MenuItem value="">Status</MenuItem>
-              <MenuItem value="false">On going</MenuItem>
-              <MenuItem value="true">Completed</MenuItem>
-            </Select>
-            {errors.isCompleted && <p>{errors.isCompleted.message}</p>}
-          </FormControl>
+          {!onCreate && (
+            <FormControl fullWidth margin="dense">
+              <InputLabel>Status</InputLabel>
+              <Select
+                {...register("isCompleted")}
+                defaultValue={task ? task.isCompleted.toString() : ""}
+                error={!!errors.isCompleted}
+              >
+                <MenuItem value="false">In progress</MenuItem>
+                <MenuItem value="true">Completed</MenuItem>
+              </Select>
+              <p>{errors.isCompleted && errors.isCompleted.message}</p>
+            </FormControl>
+          )}
         </DialogContent>
+        <AddLabelsSection
+          {...register("labels")}
+          labels={data.labels}
+          selectedLabels={task ? task.labels : []}
+          onAddLabels={(selected) => setValue("labels", selected)}
+        />
+        {/* <h4>Attachments</h4> */}
+        {/* <ul>
+          {getAllAttachments?.data?.map((attachment: any) => (
+            <li key={attachment.id}>
+              <a
+                href={attachment.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {attachment.fileName}
+              </a>
+            </li>
+          ))}
+        </ul> 
+        <FormControl fullWidth margin="dense">
+          <input
+            type="file"
+            multiple
+            onChange={(e) => {
+              const files = e.target.files ? Array.from(e.target.files) : [];
+              setValue("attachment", files);
+            }}
+          />
+        </FormControl>*/}
+        {/* <AttachmentSection taskId={task?.id} /> */}
+        <AttachmentSection
+          taskId={task?.id}
+          onUpload={handleUploadAttachments}
+          onRemove={handleDeleteAttachments}
+        />
+        {onView && task && <CommentSection taskId={task.id} />}
+
         <DialogActions>
-          <Button onClick={onClose} theme="base">
-            Cancel
+          <Button type="button" onClick={handleClose} theme="base">
+            {onView ? "Close" : "Cancel"}
           </Button>
-          <Button theme="filled" type="submit">
-            Save
-          </Button>
+          {(onCreate || onUpdate) && (
+            <Button theme="filled" type="submit">
+              Save
+            </Button>
+          )}
         </DialogActions>
       </form>
     </Dialog>

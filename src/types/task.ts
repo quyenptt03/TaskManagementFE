@@ -5,7 +5,9 @@ export type FormData = {
   title: string;
   description: string;
   categoryId: number;
-  isCompleted: boolean;
+  isCompleted?: "true" | "false";
+  labels?: Array<any>;
+  attachments?: File[] | null;
 };
 
 // export type FormFieldProps = {
@@ -54,7 +56,8 @@ export const CreateTaskSchema: ZodType<FormData> = z.object({
     .max(50, { message: "Title is too long" }),
   description: z.string().max(255, { message: "Description is too long" }),
   categoryId: z.number(),
-  isCompleted: z.boolean(),
+  isCompleted: z.enum(["true", "false"]).default("false"),
+  labels: z.array(z.any()).default([]),
 });
 
 export const GetByUserIdRequestSchema = z.object({
@@ -85,19 +88,27 @@ export const TaskResponseSchema = z.object({
   ),
 });
 
-export const CreateTaskRequestSchema = z.object({
+export const CreateTaskAPIRequestSchema = z.object({
   title: z.string(),
   description: z.string(),
-  categoryId: z.string(),
+  categoryId: z.number(),
+  // isCompleted: z.boolean(),
 });
+// export const CreateTaskAPIRequestSchema = CreateTaskSchema;
 
-export const CreateTaskResponseSchema = TaskSchema;
+export const CreateTaskAPIResponseSchema = TaskSchema;
 
 export const GetAllAPIResponseSchema = z.array(TaskResponseSchema);
 
 export const GetByIdAPIRequestSchema = z.number();
 
 export const GetByIdAPIResponseSchema = TaskResponseSchema;
+
+export const UpdateAPIRequestSchema = TaskSchema;
+
+export const UpdateAPIResponseSchema = z.object({
+  message: z.string(),
+});
 
 export const DeleteAPIRequestSchema = z.number();
 

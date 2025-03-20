@@ -49,8 +49,7 @@ export function api<Request, Response>({
       type === "private"
         ? await instance(config)
         : await instanceWithoutInterceptors(config);
-
-    console.log({ response });
+    console.log({ response, config, requestData });
 
     const result = responseSchema.safeParse(response.data);
 

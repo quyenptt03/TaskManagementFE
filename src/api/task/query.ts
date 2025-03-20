@@ -1,11 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  CreateTaskAPIResponseSchema,
+  DeleteAPIResponseSchema,
+  UpdateAPIResponseSchema,
+} from "../../types/task";
 import { TaskAPI } from "./query-slice";
-import { DeleteAPIResponseSchema } from "../../types/task";
 //@ts-ignore
 import { AxiosError } from "axios";
-import { z } from "zod";
-import { ErrorResponse } from "react-router";
 import { toast } from "react-hot-toast";
+import { ErrorResponse } from "react-router";
+import { z } from "zod";
 
 function useGetAllTasks() {
   return useQuery({
@@ -33,6 +37,48 @@ function useGetTask(taskId: number) {
   });
 }
 
+function useCreateTask() {
+  const queryClient = useQueryClient();
+  return useMutation<
+    z.infer<typeof CreateTaskAPIResponseSchema>,
+    AxiosError<ErrorResponse>,
+    any
+  >({
+    mutationFn: (task) => TaskAPI.CreateTask(task),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      toast.success("Created task successfully!!!");
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data.message;
+      toast.error(errorMessage);
+    },
+  });
+}
+
+function useUpdateTask() {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    z.infer<typeof UpdateAPIResponseSchema>,
+    AxiosError<ErrorResponse>,
+    any
+  >({
+    mutationFn: (task) => {
+      return TaskAPI.UpdateTask(task);
+    },
+    onSuccess: (res) => {
+      const { message } = res;
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      toast.success(message);
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data.message;
+      toast.error(errorMessage);
+    },
+  });
+}
+
 function useDeleteTask() {
   const queryClient = useQueryClient();
 
@@ -56,4 +102,11 @@ function useDeleteTask() {
   });
 }
 
-export { useGetAllTasks, useGetByUserId, useGetTask, useDeleteTask };
+export {
+  useCreateTask,
+  useDeleteTask,
+  useGetAllTasks,
+  useGetByUserId,
+  useGetTask,
+  useUpdateTask,
+};

@@ -1,6 +1,6 @@
-import { FieldError, UseFormRegister, FieldValues } from "react-hook-form";
-import { z, ZodType } from "zod";
-import { Task, TaskSchema } from "./task";
+import { FieldError, FieldValues, UseFormRegister } from "react-hook-form";
+import { z } from "zod";
+import { TaskSchema } from "./task";
 
 export type FormData = {
   title: string;

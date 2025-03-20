@@ -3,6 +3,10 @@ import { API_ENDPOINT } from "../endpoint_constants";
 import {
   GetAllLabelAPIResponseSchema,
   GetAllTaskLabelAPIResponseSchema,
+  AssignLabelAPIRequestSchema,
+  AssignLabelAPIResponseSchema,
+  RemoveLabelAPIRequestSchema,
+  RemoveLabelAPIResponseSchema,
 } from "../../types/taskLabel";
 import { z } from "zod";
 
@@ -10,8 +14,12 @@ const GetAllLabelRequest = z.void();
 const GetAllLabelResponse = GetAllLabelAPIResponseSchema;
 const GetAllTaskLabelRequest = z.void();
 const GetAllTaskLabelResponse = GetAllTaskLabelAPIResponseSchema;
+const AssignLabelRequest = AssignLabelAPIRequestSchema;
+const AssignLabelResponse = AssignLabelAPIResponseSchema;
+const RemoveLabelRequest = RemoveLabelAPIRequestSchema;
+const RemoveLabelResponse = RemoveLabelAPIResponseSchema;
 
-const getAllLabels = api<
+const GetAllLabels = api<
   z.infer<typeof GetAllLabelRequest>,
   z.infer<typeof GetAllLabelResponse>
 >({
@@ -22,7 +30,7 @@ const getAllLabels = api<
   type: "public",
 });
 
-const getAllTaskLabels = api<
+const GetAllTaskLabels = api<
   z.infer<typeof GetAllTaskLabelRequest>,
   z.infer<typeof GetAllTaskLabelResponse>
 >({
@@ -33,7 +41,32 @@ const getAllTaskLabels = api<
   type: "public",
 });
 
+const AssignLabel = api<
+  z.infer<typeof AssignLabelRequest>,
+  z.infer<typeof AssignLabelResponse>
+>({
+  method: "POST",
+  path: `${API_ENDPOINT.TASKLABELS}/assign`,
+  requestSchema: AssignLabelRequest,
+  responseSchema: AssignLabelResponse,
+  type: "private",
+});
+
+const RemoveLabel = api<
+  z.infer<typeof RemoveLabelRequest>,
+  z.infer<typeof RemoveLabelResponse>
+>({
+  method: "DELETE",
+  path: ({ taskId, labelId }) =>
+    `${API_ENDPOINT.TASKLABELS}/remove/${taskId}/${labelId}`,
+  requestSchema: RemoveLabelRequest,
+  responseSchema: RemoveLabelResponse,
+  type: "private",
+});
+
 export const TaskLabelAPI = {
-  getAllLabels,
-  getAllTaskLabels,
+  GetAllLabels,
+  GetAllTaskLabels,
+  AssignLabel,
+  RemoveLabel,
 };

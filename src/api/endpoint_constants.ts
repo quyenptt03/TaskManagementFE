@@ -8,4 +8,5 @@ export const API_ENDPOINT = {
   LABELS: "api/labels",
   TASKCOMMENTS: "api/task-comments",
   TASKLABELS: "api/task-labels",
+  TASKATTACHMENTS: "api/task-attachments",
 };

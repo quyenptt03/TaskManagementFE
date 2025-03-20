@@ -9,7 +9,7 @@ import {
 import { Button } from "..";
 import ConfirmDialog from "../ComfirmDialog";
 
-const CommentList = ({ taskId }: { taskId: any }) => {
+const CommentSection = ({ taskId }: { taskId: any }) => {
   const [newComment, setNewComment] = useState({
     content: "",
     taskId: "",
@@ -21,6 +21,7 @@ const CommentList = ({ taskId }: { taskId: any }) => {
   const addComment = useCreateComment();
   const deleteComment = useDeleteComment();
   const taskComments = useGetByTask(taskId);
+
   const handleAddComment = async (data: any) => {
     if (data) {
       await addComment.mutateAsync(data);
@@ -58,7 +59,7 @@ const CommentList = ({ taskId }: { taskId: any }) => {
         <Button
           theme="base"
           type="button"
-          className="w-fit mt-0 text-sm 3xl:px-10 laptop:py-2"
+          className="text-sm 3xl:px-10 laptop:py-2 mt-0 mb-0 w-fit"
           onClick={() => handleAddComment(newComment)}
         >
           Add
@@ -101,4 +102,4 @@ const CommentList = ({ taskId }: { taskId: any }) => {
   );
 };
 
-export default CommentList;
+export default CommentSection;

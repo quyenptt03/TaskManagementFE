@@ -2,28 +2,21 @@ import TaskTable from "./components/Table";
 import Info from "./components/Info";
 import { useState } from "react";
 import { useGetAllCategories } from "../../api/category/query";
+import { useCreateTask } from "../../api/task/query";
+import { CreateTaskAPIRequestSchema } from "../../types/task";
+import { useGetAllLabels } from "../../api/taskLabel/query";
 
 const TaskPage = () => {
   const getAllCategories = useGetAllCategories();
+  const getAllLabels = useGetAllLabels();
   const [open, setOpen] = useState(false);
+  const createTask = useCreateTask();
 
-  const handleCreateTask = async (newTask: any) => {
-    // try {
-    //   const response = await fetch("https://localhost:7079/api/tasks", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(newTask),
-    //   });
-
-    //   if (response.ok) {
-    //     console.log("Task created!");
-    //   } else {
-    //     console.error("Lỗi khi tạo task");
-    //   }
-    // } catch (error) {
-    //   console.error("Lỗi kết nối API", error);
-    // }
-    console.log({ newTask });
+  const handleCreateTask = async (
+    newTask: typeof CreateTaskAPIRequestSchema
+  ) => {
+    const result = await createTask.mutateAsync(newTask);
+    console.log({ result });
   };
 
   return (
@@ -31,7 +24,10 @@ const TaskPage = () => {
       <div className="p-4 w-full">
         <button onClick={() => setOpen(true)}>Add task</button>
         <Info
-          data={getAllCategories.data}
+          data={{
+            categories: getAllCategories.data,
+            labels: getAllLabels.data,
+          }}
           open={open}
           onClose={() => setOpen(false)}
           onCreate={handleCreateTask}
