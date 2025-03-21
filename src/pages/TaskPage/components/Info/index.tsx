@@ -9,6 +9,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Skeleton,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useUpdateTask } from "../../../../api/task/query";
@@ -25,7 +26,6 @@ import {
   AttachmentSection,
 } from "../../../../components";
 import {
-  useGetAllAttachments,
   useDeleteAttachment,
   useUploadAttachments,
 } from "../../../../api/taskAttachment/query";
@@ -134,8 +134,6 @@ const Info: React.FC<CreateTaskDialogProps> = ({
         )
     );
 
-    console.log({ selectedLabels, existingLabels, newLabels, labelsToRemove });
-
     if (task && onUpdate) {
       await updateTask.mutateAsync({ ...task, ...data });
       onUpdate(data);
@@ -173,6 +171,8 @@ const Info: React.FC<CreateTaskDialogProps> = ({
     deleteAttachment.mutate(id);
   };
 
+  const isLoading = (onUpdate || onView) && !task;
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle className="font-semibold">
@@ -180,49 +180,60 @@ const Info: React.FC<CreateTaskDialogProps> = ({
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
-          <FormField
-            type="text"
-            placeholder="Title"
-            name="title"
-            register={register}
-            error={errors.title}
-          />
-          <FormField
-            type="text"
-            placeholder="Description"
-            name="description"
-            register={register}
-            error={errors.description}
-          />
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Category</InputLabel>
-            <Select
-              {...register("categoryId")}
-              defaultValue={task ? task.categoryId : ""}
-              error={!!errors.categoryId}
-            >
-              <MenuItem value="">Choose category</MenuItem>
-              {data.categories?.map((category: any) => (
-                <MenuItem key={category.id} value={category.id}>
-                  {category.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <p>{errors.categoryId && errors.categoryId.message}</p>
-          </FormControl>
-          {!onCreate && (
-            <FormControl fullWidth margin="dense">
-              <InputLabel>Status</InputLabel>
-              <Select
-                {...register("isCompleted")}
-                defaultValue={task ? task.isCompleted.toString() : ""}
-                error={!!errors.isCompleted}
-              >
-                <MenuItem value="false">In progress</MenuItem>
-                <MenuItem value="true">Completed</MenuItem>
-              </Select>
-              <p>{errors.isCompleted && errors.isCompleted.message}</p>
-            </FormControl>
+          {isLoading ? (
+            <>
+              <Skeleton variant="text" width="100%" height={40} />
+              <Skeleton variant="text" width="100%" height={40} />
+              <Skeleton variant="rectangular" width="100%" height={56} />
+              <Skeleton variant="rectangular" width="100%" height={56} />
+            </>
+          ) : (
+            <>
+              <FormField
+                type="text"
+                placeholder="Title"
+                name="title"
+                register={register}
+                error={errors.title}
+              />
+              <FormField
+                type="text"
+                placeholder="Description"
+                name="description"
+                register={register}
+                error={errors.description}
+              />
+              <FormControl fullWidth margin="dense">
+                <InputLabel>Category</InputLabel>
+                <Select
+                  {...register("categoryId")}
+                  defaultValue={task ? task.categoryId : ""}
+                  error={!!errors.categoryId}
+                >
+                  <MenuItem value="">Choose category</MenuItem>
+                  {data.categories?.map((category: any) => (
+                    <MenuItem key={category.id} value={category.id}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <p>{errors.categoryId && errors.categoryId.message}</p>
+              </FormControl>
+              {!onCreate && (
+                <FormControl fullWidth margin="dense">
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    {...register("isCompleted")}
+                    defaultValue={task ? task.isCompleted.toString() : ""}
+                    error={!!errors.isCompleted}
+                  >
+                    <MenuItem value="false">In progress</MenuItem>
+                    <MenuItem value="true">Completed</MenuItem>
+                  </Select>
+                  <p>{errors.isCompleted && errors.isCompleted.message}</p>
+                </FormControl>
+              )}
+            </>
           )}
         </DialogContent>
         <AddLabelsSection
@@ -231,36 +242,14 @@ const Info: React.FC<CreateTaskDialogProps> = ({
           selectedLabels={task ? task.labels : []}
           onAddLabels={(selected) => setValue("labels", selected)}
         />
-        {/* <h4>Attachments</h4> */}
-        {/* <ul>
-          {getAllAttachments?.data?.map((attachment: any) => (
-            <li key={attachment.id}>
-              <a
-                href={attachment.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {attachment.fileName}
-              </a>
-            </li>
-          ))}
-        </ul> 
-        <FormControl fullWidth margin="dense">
-          <input
-            type="file"
-            multiple
-            onChange={(e) => {
-              const files = e.target.files ? Array.from(e.target.files) : [];
-              setValue("attachment", files);
-            }}
+        {!onCreate && (
+          <AttachmentSection
+            // {...register("attachments")}
+            taskId={task?.id}
+            onUpload={handleUploadAttachments}
+            onRemove={handleDeleteAttachments}
           />
-        </FormControl>*/}
-        {/* <AttachmentSection taskId={task?.id} /> */}
-        <AttachmentSection
-          taskId={task?.id}
-          onUpload={handleUploadAttachments}
-          onRemove={handleDeleteAttachments}
-        />
+        )}
         {onView && task && <CommentSection taskId={task.id} />}
 
         <DialogActions>

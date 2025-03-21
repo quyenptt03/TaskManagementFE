@@ -10,6 +10,7 @@ import {
   DeleteAttachmentAPIResponseSchema,
 } from "../../types/taskAttachment";
 import { z } from "zod";
+import { instance } from "../axiosClient";
 
 const GetAllRequest = GetAllAPIeRequestSchema;
 const GetAllResponse = GetAllAPIResponseSchema;
@@ -29,18 +30,40 @@ const GetAll = api<
   type: "public",
 });
 
-const UploadAttachments = api<
-  z.infer<typeof UploadRequest>,
-  // any,
-  z.infer<typeof UploadResponse>
->({
-  method: "POST",
-  path: (data) =>
-    `${API_ENDPOINT.TASKATTACHMENTS}/upload-multiple/${data.taskId}`,
-  requestSchema: UploadRequest,
-  responseSchema: UploadResponse,
-  type: "private",
-});
+// const UploadAttachments = api<
+//   // { files: z.infer<typeof UploadRequest>["files"] },
+//   any,
+//   z.infer<typeof UploadResponse>
+// >({
+//   method: "POST",
+//   path: (data) => {
+//     console.log({ data });
+//     return `${API_ENDPOINT.TASKATTACHMENTS}/upload-multiple/${data.id}`;
+//   },
+//   requestSchema: UploadRequest.shape.files,
+//   responseSchema: UploadResponse,
+//   type: "private",
+// });
+export const UploadAttachments = async ({
+  taskId,
+  files,
+}: {
+  taskId: string;
+  files: File[];
+}) => {
+  const formData = new FormData();
+  files.forEach((file) => formData.append("files", file));
+  const response = await instance.post(
+    `${API_ENDPOINT.TASKATTACHMENTS}/upload-multiple/${taskId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return response.data;
+};
 
 const DeleteAttachment = api<
   z.infer<typeof DeleteAttachmentRequest>,

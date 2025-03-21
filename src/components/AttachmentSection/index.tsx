@@ -85,7 +85,6 @@ const AttachmentSection = ({
         <p>No attachments</p>
       )}
 
-      {/* File input for uploading new attachments */}
       <div className="mt-4">
         <input
           type="file"
@@ -102,7 +101,6 @@ const AttachmentSection = ({
         </button>
       </div>
 
-      {/* Display selected files */}
       {selectedFiles.length > 0 && (
         <div className="mt-4">
           <h4 className="font-semibold">Selected Files</h4>
@@ -125,111 +123,3 @@ const AttachmentSection = ({
 };
 
 export default AttachmentSection;
-// import React, { useState } from "react";
-// import {
-//   Dialog,
-//   DialogActions,
-//   DialogContent,
-//   DialogTitle,
-//   Box,
-//   List,
-//   ListItem,
-//   ListItemText,
-//   IconButton,
-// } from "@mui/material";
-// import { Button } from "..";
-
-// const AddAttachmentSection: React.FC<{
-//   selectedAttachments: File[];
-//   onAddAttachments: (selected: File[]) => void;
-// }> = ({ selectedAttachments, onAddAttachments }) => {
-//   const [open, setOpen] = useState(false);
-//   const [tempSelectedAttachments, setTempSelectedAttachments] = useState<
-//     File[]
-//   >(selectedAttachments || []);
-
-//   const handleOpen = () => setOpen(true);
-//   const handleClose = () => setOpen(false);
-
-//   const handleSave = () => {
-//     onAddAttachments(tempSelectedAttachments);
-//     handleClose();
-//   };
-
-//   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     if (event.target.files) {
-//       setTempSelectedAttachments([
-//         ...tempSelectedAttachments,
-//         ...Array.from(event.target.files),
-//       ]);
-//     }
-//   };
-
-//   const handleRemoveAttachment = (index: number) => {
-//     setTempSelectedAttachments(
-//       tempSelectedAttachments.filter((_, i) => i !== index)
-//     );
-//   };
-
-//   return (
-//     <div>
-//       <Button type="button" onClick={handleOpen} theme="base">
-//         + Add Attachments
-//       </Button>
-//       <Box mt={2}>
-//         {tempSelectedAttachments.length > 0 && (
-//           <List>
-//             {tempSelectedAttachments.map((file, index) => (
-//               <ListItem
-//                 key={index}
-//                 secondaryAction={
-//                   <IconButton
-//                     edge="end"
-//                     onClick={() => handleRemoveAttachment(index)}
-//                   >
-//                     X
-//                   </IconButton>
-//                 }
-//               >
-//                 <ListItemText primary={file.name} />
-//               </ListItem>
-//             ))}
-//           </List>
-//         )}
-//       </Box>
-//       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-//         <DialogTitle>Select Attachments</DialogTitle>
-//         <DialogContent>
-//           <input type="file" multiple onChange={handleFileChange} />
-//           <List>
-//             {tempSelectedAttachments.map((file, index) => (
-//               <ListItem
-//                 key={index}
-//                 secondaryAction={
-//                   <IconButton
-//                     edge="end"
-//                     onClick={() => handleRemoveAttachment(index)}
-//                   >
-//                     X
-//                   </IconButton>
-//                 }
-//               >
-//                 <ListItemText primary={file.name} />
-//               </ListItem>
-//             ))}
-//           </List>
-//         </DialogContent>
-//         <DialogActions>
-//           <Button onClick={handleClose} theme="base">
-//             Cancel
-//           </Button>
-//           <Button onClick={handleSave} theme="filled">
-//             Save
-//           </Button>
-//         </DialogActions>
-//       </Dialog>
-//     </div>
-//   );
-// };
-
-// export default AddAttachmentSection;

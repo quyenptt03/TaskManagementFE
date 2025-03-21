@@ -32,13 +32,6 @@ export function api<Request, Response>({
         data = requestData;
       }
     }
-    // if (requestData) {
-    //   if (method === "DELETE") {
-    //     url += `${requestData}`;
-    //   } else {
-    //     data = requestData;
-    //   }
-    // }
 
     const config: AxiosRequestConfig = {
       method,
@@ -49,7 +42,6 @@ export function api<Request, Response>({
       type === "private"
         ? await instance(config)
         : await instanceWithoutInterceptors(config);
-    console.log({ response, config, requestData });
 
     const result = responseSchema.safeParse(response.data);
 

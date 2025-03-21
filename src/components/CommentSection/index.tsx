@@ -8,6 +8,7 @@ import {
 } from "../../api/taskComment/query";
 import { Button } from "..";
 import ConfirmDialog from "../ComfirmDialog";
+import { AccountCircle } from "@mui/icons-material";
 
 const CommentSection = ({ taskId }: { taskId: any }) => {
   const [newComment, setNewComment] = useState({
@@ -65,32 +66,51 @@ const CommentSection = ({ taskId }: { taskId: any }) => {
           Add
         </Button>
       </div>
-      <div>
+      <ul>
         {taskComments.data && taskComments.data.length === 0 ? (
           <p>No comments yet</p>
         ) : (
           taskComments.data?.map((comment) => (
-            <div key={comment.id}>
+            // <li key={comment.id}>
+            //   <div className="flex justify-between">
+            //     <div>
+            //       <AccountCircle style={{ color: "gray"   }} />
+            //     </div>
+            //     <span>{comment.userName}</span>
+            //     <span>{comment.content}</span>
+            //     <span>
+            //       {DateTime.fromISO(comment.createdAt)
+            //         .setZone("UTC+14")
+            //         .toFormat("dd-MM-yyyy HH:mm:ss")}
+            //     </span>
+            //   </div>
+            //   <button
+            //     type="button"
+            //     className="text-xs"
+            //     onClick={() => openDeleteDialog(comment.id)}
+            //   >
+            //     Delete
+            //   </button>
+            // </li>
+            <li className="mb-4 border-top border-bottom border-solid border-black py-2">
               <div className="flex justify-between">
-                <span>{comment.userName}</span>
-                <span>{comment.content}</span>
-                <span>
+                <div className="flex ">
+                  <AccountCircle className="text-gray-200 text-4xl mr-2" />
+                  <div>
+                    <p className="font-medium">{comment.userName}</p>
+                    <p className="text-gray-800">{comment.content}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500">
                   {DateTime.fromISO(comment.createdAt)
                     .setZone("UTC+14")
                     .toFormat("dd-MM-yyyy HH:mm:ss")}
-                </span>
+                </p>
               </div>
-              <button
-                type="button"
-                className="text-xs"
-                onClick={() => openDeleteDialog(comment.id)}
-              >
-                Delete
-              </button>
-            </div>
+            </li>
           ))
         )}
-      </div>
+      </ul>
       <ConfirmDialog
         open={openConfirm}
         title="Delete Confirmation"

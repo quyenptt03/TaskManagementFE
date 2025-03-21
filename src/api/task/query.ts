@@ -10,6 +10,7 @@ import { AxiosError } from "axios";
 import { toast } from "react-hot-toast";
 import { ErrorResponse } from "react-router";
 import { z } from "zod";
+import { TaskLabelAPI } from "../taskLabel/query-slice";
 
 function useGetAllTasks() {
   return useQuery({
@@ -44,7 +45,17 @@ function useCreateTask() {
     AxiosError<ErrorResponse>,
     any
   >({
-    mutationFn: (task) => TaskAPI.CreateTask(task),
+    mutationFn: async (task) => {
+      const taskInfo = await TaskAPI.CreateTask(task);
+      if (task.labels?.length) {
+        await Promise.all(
+          task.labels.map((label: any) =>
+            TaskLabelAPI.AssignLabel({ taskId: taskInfo.id, labelId: label.id })
+          )
+        );
+      }
+      return taskInfo;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       toast.success("Created task successfully!!!");

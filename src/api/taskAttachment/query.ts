@@ -22,24 +22,43 @@ function useGetAllAttachments(taskId: number) {
   });
 }
 
+// function useUploadAttachments() {
+//   const queryClient = useQueryClient();
+//   return useMutation<
+//     z.infer<typeof UploadAttachmentAPIResponseSchema>,
+//     AxiosError<ErrorResponse>,
+//     { taskId: number; files: File[] }
+//   >({
+//     mutationFn: ({ taskId, files }) => {
+//       console.log({ taskId, files });
+//       // const formData = new FormData();
+//       // files.forEach((file) => formData.append("files", file));
+//       return TaskAttachmentAPI.UploadAttachments({ taskId, files });
+//     },
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ["task-attachments"] });
+//       toast.success("Upload attachments successfully!!!");
+//     },
+//     onError: (error) => {
+//       const errorMessage = error.response?.data.message;
+//       toast.error(errorMessage);
+//     },
+//   });
+// }
+
 function useUploadAttachments() {
   const queryClient = useQueryClient();
-  return useMutation<
-    z.infer<typeof UploadAttachmentAPIResponseSchema>,
-    AxiosError<ErrorResponse>,
-    any
-  >({
-    mutationFn: (data) => {
-      console.log({ data });
-      return TaskAttachmentAPI.UploadAttachments(data);
-    },
-    onSuccess: () => {
+
+  return useMutation({
+    mutationFn: TaskAttachmentAPI.UploadAttachments,
+    onSuccess: (res) => {
+      console.log(res);
       queryClient.invalidateQueries({ queryKey: ["task-attachments"] });
-      toast.success("Upload attachments successfully!!!");
+      toast.success("Upload attachments successfully!");
     },
-    onError: (error) => {
-      const errorMessage = error.response?.data.message;
-      toast.error(errorMessage);
+    onError: (error: AxiosError<{ message?: string }>) => {
+      console.log({ error });
+      toast.error(error.response?.data?.message || "Upload failed.");
     },
   });
 }

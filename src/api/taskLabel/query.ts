@@ -40,8 +40,6 @@ function useAssignLabel() {
     mutationFn: (label) => TaskLabelAPI.AssignLabel(label),
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      // const { message } = res;
-      // toast.success(message);
     },
     onError: (error) => {
       const errorMessage = error.response?.data.message;

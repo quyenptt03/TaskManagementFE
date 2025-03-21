@@ -4,6 +4,7 @@ import {
   MenuItem,
   Paper,
   Select,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -21,6 +22,7 @@ import { useUserStore } from "../../../../store/useUserStore";
 import { Task } from "../../../../types/task";
 import Info from "../Info";
 import { useGetAllLabels } from "../../../../api/taskLabel/query";
+import { Visibility, Edit, Clear } from "@mui/icons-material";
 
 const TaskTable = () => {
   const { user } = useUserStore();
@@ -43,7 +45,12 @@ const TaskTable = () => {
 
   //@ts-ignore
   const userId = user.user?.id || 0;
-  const { data: tasks, refetch } = useGetByUserId(userId, filters);
+  const {
+    data: tasks,
+    refetch,
+    isLoading: isTasksLoading,
+  } = useGetByUserId(userId, filters);
+
   const getAllCategories = useGetAllCategories();
   const getAllLabels = useGetAllLabels();
 
@@ -114,11 +121,11 @@ const TaskTable = () => {
 
   return (
     <div>
-      <div className="p-4 w-full">
-        <TableContainer component={Paper} className="w-3/4 mx-auto">
-          <Table>
-            <TableHead>
-              <TableRow>
+      <div className="w-full">
+        <TableContainer component={Paper} className="w-full mx-auto">
+          <Table className="border-gray-200 border border-solid shadow-none rounded-lg">
+            <TableHead className="shadow-none">
+              <TableRow className="shadow-none">
                 <TableCell padding="checkbox">
                   <Checkbox
                     indeterminate={
@@ -134,19 +141,22 @@ const TaskTable = () => {
                     }
                   />
                 </TableCell>
-                <TableCell sx={{ width: "150px", fontWeight: "bold" }}>
+                <TableCell sx={{ width: "250px", fontWeight: "bold" }}>
                   <TableSortLabel
                     active={orderBy === "title"}
                     direction={orderBy === "title" ? order : "asc"}
                     onClick={() => handleSort("title")}
                   >
-                    Title
+                    Task
                   </TableSortLabel>
                 </TableCell>
-                <TableCell sx={{ width: "50px", fontWeight: "bold" }}>
+                <TableCell sx={{ width: "2px", fontWeight: "bold" }}>
                   <Select
                     name="isCompleted"
                     value={filters.isCompleted}
+                    sx={{
+                      fontWeight: 600,
+                    }}
                     onChange={(e) =>
                       handleFilterChange(
                         e as React.ChangeEvent<{ name: string; value: string }>
@@ -159,10 +169,18 @@ const TaskTable = () => {
                     <MenuItem value="false">Not Completed</MenuItem>
                   </Select>
                 </TableCell>
-                <TableCell sx={{ width: "80px", fontWeight: "bold" }}>
+                <TableCell
+                  sx={{
+                    width: "80px",
+                    fontWeight: "bold",
+                  }}
+                >
                   <Select
                     name="categoryId"
                     value={filters.categoryId}
+                    sx={{
+                      fontWeight: 600,
+                    }}
                     onChange={(e) =>
                       handleFilterChange(
                         e as React.ChangeEvent<{ name: string; value: string }>
@@ -178,7 +196,7 @@ const TaskTable = () => {
                     ))}
                   </Select>
                 </TableCell>
-                <TableCell sx={{ width: "80px", fontWeight: "bold" }}>
+                <TableCell sx={{ width: "50px", fontWeight: "bold" }}>
                   <TableSortLabel
                     active={orderBy === "createdAt"}
                     direction={orderBy === "createdAt" ? order : "asc"}
@@ -196,86 +214,139 @@ const TaskTable = () => {
                     Label
                   </TableSortLabel>
                 </TableCell>
-                <TableCell sx={{ width: "80px", fontWeight: "bold" }}>
+                <TableCell sx={{ width: "50px", fontWeight: "bold" }}>
                   Action
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {sortedTasks?.map((task, index) => (
-                <TableRow key={index}>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selected.includes(task.id)}
-                      onChange={() => handleSelect(task.id)}
-                    />
-                  </TableCell>
-                  <TableCell
-                    sx={{ wordBreak: "break-word", whiteSpace: "normal" }}
-                  >
-                    <Typography fontWeight="bold">{task.title}</Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {task.description}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    {task.isCompleted ? "✅ Completed" : "❌ In progress"}
-                  </TableCell>
-                  <TableCell>{task.category.name}</TableCell>
-                  <TableCell>
-                    {new Date(task.createdAt).toLocaleDateString("en-US")}
-                  </TableCell>
-                  <TableCell>
-                    {task.labels.map((label, index) => (
-                      <Chip
-                        key={index}
-                        label={label.name}
-                        style={{
-                          backgroundColor: `#${Math.floor(
-                            Math.random() * 16777215
-                          ).toString(16)}`,
-                          color: "white",
-                        }}
-                      />
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex">
-                      <div className="h-full mr-3">
-                        <button
-                          className="h-full"
-                          onClick={() => handleViewDetail(task.id)}
-                        >
-                          View
-                        </button>
-                      </div>
-                      <div className="h-full mr-3">
-                        <button
-                          className="h-full"
-                          onClick={() => handleUpdate(task.id)}
-                        >
-                          ✏️
-                        </button>
-                      </div>
-                      <div className="h-full">
-                        <button
-                          className="h-full"
-                          onClick={() => openDeleteDialog(task.id)}
-                        >
-                          ❌
-                        </button>
-                        <ConfirmDialog
-                          open={openConfirm}
-                          title="Delete Confirmation"
-                          message="Are you sure you want to delete this task?"
-                          onConfirm={() => handleDelete()}
-                          onCancel={() => setOpenConfirm(false)}
+            <TableBody className="shadow-none">
+              {isTasksLoading
+                ? Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Skeleton
+                          variant="rectangular"
+                          width={20}
+                          height={20}
                         />
-                      </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width="80%" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width="50%" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width="50%" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width="50%" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width="50%" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton
+                          variant="rectangular"
+                          width={50}
+                          height={20}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                : sortedTasks?.map((task, index) => (
+                    <TableRow
+                      key={index}
+                      className={`shadow-none ${
+                        task.isCompleted ? "bg-[#d9e7f33d]" : "bg-white"
+                      }`}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selected.includes(task.id)}
+                          onChange={() => handleSelect(task.id)}
+                        />
+                      </TableCell>
+                      <TableCell
+                        sx={{ wordBreak: "break-word", whiteSpace: "normal" }}
+                      >
+                        <Typography fontWeight="500">
+                          {task.title.length > 20
+                            ? `${task.title.slice(0, 20)}...`
+                            : task.title}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {task.description.length > 25
+                            ? `${task.description.slice(0, 25)}...`
+                            : task.description}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        {task.isCompleted ? (
+                          <span className="text-success-dark font-medium">
+                            Completed
+                          </span>
+                        ) : (
+                          <span className="text-error-dark font-medium">
+                            In progress
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell>{task.category.name}</TableCell>
+                      <TableCell>
+                        {new Date(task.createdAt).toLocaleDateString("en-US")}
+                      </TableCell>
+                      <TableCell>
+                        {task.labels.map((label, index) => (
+                          <Chip
+                            key={index}
+                            label={label.name}
+                            style={{
+                              backgroundColor: "#ebebeb",
+                              color: "black",
+                              marginRight: "5px",
+                              borderRadius: "8px",
+                            }}
+                          />
+                        ))}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex">
+                          <div className="h-full mr-3">
+                            <button
+                              className="h-full"
+                              onClick={() => handleViewDetail(task.id)}
+                            >
+                              <Visibility />
+                            </button>
+                          </div>
+                          <div className="h-full mr-3">
+                            <button
+                              className="h-full"
+                              onClick={() => handleUpdate(task.id)}
+                            >
+                              <Edit />
+                            </button>
+                          </div>
+                          <div className="h-full">
+                            <button
+                              className="h-full"
+                              onClick={() => openDeleteDialog(task.id)}
+                            >
+                              <Clear style={{ color: "red" }} />
+                            </button>
+                            <ConfirmDialog
+                              open={openConfirm}
+                              title="Delete Confirmation"
+                              message="Are you sure you want to delete this task?"
+                              onConfirm={() => handleDelete()}
+                              onCancel={() => setOpenConfirm(false)}
+                            />
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
             </TableBody>
           </Table>
         </TableContainer>
