@@ -2,6 +2,7 @@ import { create, StateCreator } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface User {
+  id: number;
   userName: string;
   email: string;
   role: string[];

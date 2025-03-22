@@ -9,7 +9,7 @@ body {
   height: 100%;
   min-height: 100vh;
   box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif !important;
 }
 
 body {
@@ -30,6 +30,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: inherit;
+  font-family: "Montserrat", sans-serif !important;
 }
 
 li,

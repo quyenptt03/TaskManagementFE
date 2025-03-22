@@ -36,12 +36,11 @@ export function useSignIn() {
       Cookies.set("token", accessToken, { expires: 1 });
 
       toast.success(message);
-      navigate("/dashboard");
+      navigate("/tasks");
     },
     onError: (error) => {
       const errorMessage = error.response?.data.message;
       toast.error(errorMessage);
-      console.log({ error, errorMessage });
     },
   });
 }
@@ -85,7 +84,6 @@ export function useSignOut() {
     onError: (error) => {
       const errorMessage = error.response?.data.message;
       toast.error(errorMessage);
-      console.log({ error: errorMessage });
     },
   });
 }

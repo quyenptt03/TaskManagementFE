@@ -1,9 +1,8 @@
 import { useForm } from "react-hook-form";
-import { FormData, RegisterSchema } from "../../../types/auth";
-import InputField from "../../../components/form-controls/InputField";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FormData, RegisterSchema } from "../../../types/auth";
 import { useSignUp } from "../../../api/auth/query";
-import Button from "../../../components/Button";
+import { Button, InputField } from "../../../components";
 
 function LoginForm() {
   const {
@@ -62,7 +61,7 @@ function LoginForm() {
             error={errors.confirmPassword}
           />
           <span className="mb mt-5">
-            Already have an Account ?{" "}
+            Already have an account ?{" "}
             <a href="/login" className="font-medium hover:text-[#3674B5]">
               Login
             </a>

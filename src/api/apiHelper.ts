@@ -5,7 +5,7 @@ import { AxiosRequestConfig, Method } from "axios";
 
 interface APICallPayload<Request, Response> {
   method: Method;
-  path: string;
+  path: string | ((params: Request) => string);
   requestSchema?: z.ZodType<Request>;
   responseSchema: z.ZodType<Response>;
   type?: "private" | "public";
@@ -22,14 +22,13 @@ export function api<Request, Response>({
     if (requestSchema) {
       requestSchema.parse(requestData);
     }
+    let url = typeof path === "function" ? path(requestData) : path;
 
-    let url = path;
+    // let url = path;
     let data = null;
 
     if (requestData) {
-      if (method === "GET" || method === "DELETE") {
-        url += `${requestData}`;
-      } else {
+      if (method === "POST" || method === "PUT") {
         data = requestData;
       }
     }

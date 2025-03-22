@@ -51,6 +51,7 @@ const config = {
       xxl: "26px",
       "2xl": "30px",
       "3xl": "36px",
+      "4xl": "42px",
     },
 
     fontFamily: {

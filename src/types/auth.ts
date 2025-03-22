@@ -16,7 +16,7 @@ export type FormFieldProps = {
   valueAsNumber?: boolean;
 };
 
-export type ValidFieldNames = "email" | "password" | "confirmPassword";
+export type ValidFieldNames = any;
 
 const passwordValidation = new RegExp(
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
@@ -55,6 +55,7 @@ export const LoginSchema: ZodType<FormData> = z.object({
 export const SignInAPIResponseSchema = z.object({
   message: z.string(),
   data: z.object({
+    id: z.number(),
     userName: z.string(),
     email: z.string(),
     role: z.array(z.string()),
