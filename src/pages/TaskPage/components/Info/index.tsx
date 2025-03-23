@@ -175,7 +175,7 @@ const Info: React.FC<CreateTaskDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle className="font-semibold">
+      <DialogTitle className="font-semibold text-center">
         {onCreate ? "Create task" : onUpdate ? "Update Task" : "View Task"}
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -189,69 +189,111 @@ const Info: React.FC<CreateTaskDialogProps> = ({
             </>
           ) : (
             <>
-              <FormField
-                type="text"
-                placeholder="Title"
-                name="title"
-                register={register}
-                error={errors.title}
-              />
-              <FormField
-                type="text"
-                placeholder="Description"
-                name="description"
-                register={register}
-                error={errors.description}
-              />
-              <FormControl fullWidth margin="dense">
-                <InputLabel>Category</InputLabel>
-                <Select
-                  {...register("categoryId")}
-                  defaultValue={task ? task.categoryId : ""}
-                  error={!!errors.categoryId}
+              <div className="mb-3">
+                <label
+                  htmlFor="title"
+                  className="text-base font-medium capitalize mt-3"
                 >
-                  <MenuItem value="">Choose category</MenuItem>
-                  {data.categories?.map((category: any) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <p>{errors.categoryId && errors.categoryId.message}</p>
-              </FormControl>
-              {!onCreate && (
-                <FormControl fullWidth margin="dense">
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    {...register("isCompleted")}
-                    defaultValue={task ? task.isCompleted.toString() : ""}
-                    error={!!errors.isCompleted}
-                  >
-                    <MenuItem value="false">In progress</MenuItem>
-                    <MenuItem value="true">Completed</MenuItem>
-                  </Select>
-                  <p>{errors.isCompleted && errors.isCompleted.message}</p>
+                  Title
+                </label>
+                <FormField
+                  type="text"
+                  placeholder="Title"
+                  name="title"
+                  register={register}
+                  error={errors.title}
+                />
+              </div>
+              <div className="mb-3">
+                <label
+                  htmlFor="description"
+                  className="text-base font-medium capitalize mt-3"
+                >
+                  Description
+                </label>
+                <FormControl
+                  fullWidth
+                  margin="dense"
+                  error={!!errors.description}
+                >
+                  <textarea
+                    placeholder="Description"
+                    {...register("description")}
+                    className={`w-full h-24 p-3 text-sm border border-black rounded resize-none`}
+                    rows={4}
+                  />
+                  <p style={{ color: "red", fontSize: "0.875rem" }}>
+                    {errors.description && errors.description.message}
+                  </p>
                 </FormControl>
+              </div>
+              <div className="mb-3">
+                <label
+                  htmlFor="category"
+                  className="text-base font-medium capitalize mt-3"
+                >
+                  Category
+                </label>
+                <FormControl fullWidth margin="dense">
+                  <Select
+                    {...register("categoryId")}
+                    defaultValue={task ? task.categoryId : ""}
+                    error={!!errors.categoryId}
+                  >
+                    <MenuItem value="">Choose category</MenuItem>
+                    {data.categories?.map((category: any) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <p>{errors.categoryId && errors.categoryId.message}</p>
+                </FormControl>
+              </div>
+              {!onCreate && (
+                <div>
+                  <label
+                    htmlFor="status"
+                    className="text-base font-medium capitalize mt-3"
+                  >
+                    Status
+                  </label>
+                  <FormControl fullWidth margin="dense">
+                    <Select
+                      {...register("isCompleted")}
+                      defaultValue={task ? task.isCompleted.toString() : ""}
+                      error={!!errors.isCompleted}
+                    >
+                      <MenuItem value="false">In progress</MenuItem>
+                      <MenuItem value="true">Completed</MenuItem>
+                    </Select>
+                    <p>{errors.isCompleted && errors.isCompleted.message}</p>
+                  </FormControl>
+                </div>
               )}
             </>
           )}
-        </DialogContent>
-        <AddLabelsSection
-          {...register("labels")}
-          labels={data.labels}
-          selectedLabels={task ? task.labels : []}
-          onAddLabels={(selected) => setValue("labels", selected)}
-        />
-        {!onCreate && (
-          <AttachmentSection
-            // {...register("attachments")}
-            taskId={task?.id}
-            onUpload={handleUploadAttachments}
-            onRemove={handleDeleteAttachments}
+          <AddLabelsSection
+            {...register("labels")}
+            labels={data.labels}
+            selectedLabels={task ? task.labels : []}
+            onAddLabels={(selected) => setValue("labels", selected)}
           />
-        )}
-        {onView && task && <CommentSection taskId={task.id} />}
 
+          {!onCreate && (
+            <AttachmentSection
+              // {...register("attachments")}
+              taskId={task?.id}
+              onUpload={handleUploadAttachments}
+              onRemove={handleDeleteAttachments}
+            />
+          )}
+          {onView && task && (
+            <div className="mt-2">
+              <CommentSection taskId={task.id} />
+            </div>
+          )}
+        </DialogContent>
         <DialogActions>
           <Button type="button" onClick={handleClose} theme="base">
             {onView ? "Close" : "Cancel"}

@@ -2,7 +2,7 @@ interface IButtonProps {
   onClick?: () => void;
   className?: string;
   type?: "button" | "submit" | "reset";
-  theme: "base" | "filled";
+  theme: "base" | "filled" | "noBg";
   children: any;
 }
 
@@ -19,7 +19,7 @@ const Button = (props: IButtonProps) => {
         {children}
       </button>
     );
-  else
+  else if (theme === "base")
     return (
       <button
         type={type}
@@ -30,6 +30,17 @@ const Button = (props: IButtonProps) => {
         {children}
       </button>
     );
+  else {
+    return (
+      <button
+        type={type}
+        onClick={onClick}
+        className={`my-4 font-semibold rounded-lg  text-black  hover:text-[#4D55CC]   transition-all duration-200 ease-linear ${className}`}
+      >
+        {children}
+      </button>
+    );
+  }
 };
 
 export default Button;

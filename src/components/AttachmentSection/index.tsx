@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useGetAllAttachments } from "../../api/taskAttachment/query";
 import ConfirmDialog from "../ComfirmDialog";
+import { AttachFile, Clear } from "@mui/icons-material";
 
 const AttachmentSection = ({
   taskId,
@@ -8,8 +9,8 @@ const AttachmentSection = ({
   onRemove,
 }: {
   taskId: number;
-  onUpload: (files: File[]) => void;
-  onRemove: (attachmentId: number) => void;
+  onUpload?: (files: File[]) => void;
+  onRemove?: (attachmentId: number) => void;
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
@@ -22,7 +23,7 @@ const AttachmentSection = ({
 
   const handleUpload = () => {
     if (selectedFiles.length > 0) {
-      onUpload(selectedFiles);
+      onUpload?.(selectedFiles);
       setSelectedFiles([]);
     }
   };
@@ -39,7 +40,7 @@ const AttachmentSection = ({
 
   const handleConfirmRemove = () => {
     if (attachmentToRemove !== null) {
-      onRemove(attachmentToRemove);
+      onRemove?.(attachmentToRemove);
       setAttachmentToRemove(null);
     }
     setIsConfirmDialogOpen(false);
@@ -52,31 +53,34 @@ const AttachmentSection = ({
 
   return (
     <div>
-      <h3 className="font-semibold">Attachments</h3>
+      <h3 className="font-semibold">+ Attachments</h3>
 
       {isLoading ? (
         <p>Loading attachments...</p>
       ) : existingAttachments && existingAttachments.length > 0 ? (
-        <ul className="mt-4">
+        <ul className="mt-4 ">
           {existingAttachments.map((attachment: any) => (
             <li
               key={attachment.id}
-              className="flex items-center justify-between"
+              className="flex items-center justify-between p-2 mr-5 border border-gray-200 rounded my-2"
             >
               <a
                 href={attachment.fileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 underline"
+                className="text-blue-500 hover:text-blue-700"
               >
-                {attachment.fileName}
+                <span className="hover:text-[#4D55CC]">
+                  <AttachFile />
+                  {attachment.fileName}
+                </span>
               </a>
               <button
                 type="button"
                 onClick={() => handleRemoveAttachment(attachment.id)}
-                className="text-red-500 ml-4"
+                className="text-red-500 ml-4 hover:text-primary-dark"
               >
-                Remove
+                <Clear />
               </button>
             </li>
           ))}
@@ -84,23 +88,23 @@ const AttachmentSection = ({
       ) : (
         <p>No attachments</p>
       )}
-
-      <div className="mt-4">
-        <input
-          type="file"
-          multiple
-          onChange={handleFileChange}
-          className="mb-2"
-        />
-        <button
-          onClick={handleUpload}
-          className="bg-blue-500  px-4 py-2 rounded"
-          disabled={selectedFiles.length === 0}
-        >
-          Upload
-        </button>
-      </div>
-
+      {onUpload && onRemove && (
+        <div className="mt-4">
+          <input
+            type="file"
+            multiple
+            onChange={handleFileChange}
+            className="mb-2"
+          />
+          <button
+            onClick={handleUpload}
+            className="bg-blue-500  px-4 py-2 rounded"
+            disabled={selectedFiles.length === 0}
+          >
+            Upload
+          </button>
+        </div>
+      )}
       {selectedFiles.length > 0 && (
         <div className="mt-4">
           <h4 className="font-semibold">Selected Files</h4>

@@ -23,6 +23,7 @@ import { Task } from "../../../../types/task";
 import Info from "../Info";
 import { useGetAllLabels } from "../../../../api/taskLabel/query";
 import { Visibility, Edit, Clear } from "@mui/icons-material";
+import TaskDetails from "../../../../components/Details";
 
 const TaskTable = () => {
   const { user } = useUserStore();
@@ -358,8 +359,16 @@ const TaskTable = () => {
         task={editTask}
         data={{ categories: getAllCategories.data, labels: getAllLabels.data }}
       />
-
+      {/* 
       <Info
+        open={openView}
+        onClose={() => setOpenView(false)}
+        onView={handleViewDetail}
+        task={viewTask}
+        data={{ categories: getAllCategories.data, labels: getAllLabels.data }}
+      /> */}
+
+      <TaskDetails
         open={openView}
         onClose={() => setOpenView(false)}
         onView={handleViewDetail}

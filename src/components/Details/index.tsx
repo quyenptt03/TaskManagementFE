@@ -1,10 +1,12 @@
 import { Clear } from "@mui/icons-material";
-import { Chip, Dialog } from "@mui/material";
+import { Chip, Dialog, Skeleton } from "@mui/material";
 import { useState } from "react";
 import { useUserStore } from "../../store/useUserStore";
 import Avt from "../../assets/avt.jpeg";
 import AttachmentSection from "../AttachmentSection";
 import CommentSection from "../CommentSection";
+import { LoaderIcon } from "react-hot-toast";
+import { l } from "react-router/dist/development/fog-of-war-CGNKxM4z";
 
 interface DialogViewProps {
   data?: any;
@@ -21,10 +23,69 @@ const TaskDetails = ({
   data,
   task,
 }: DialogViewProps) => {
-  const [comment, setComment] = useState("");
   const { user } = useUserStore();
   //@ts-ignore
   const profile: User = user?.user;
+
+  if (!task) {
+    return (
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <div className="bg-white p-6">
+          <Skeleton variant="text" width="50%" height={30} />
+          <Skeleton
+            variant="rectangular"
+            width="100%"
+            height={20}
+            className="mt-4"
+          />
+          <div className="flex mt-6">
+            <div className="w-3/4 mr-4 border-r pr-4">
+              <Skeleton variant="text" width="30%" height={20} />
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={40}
+                className="mt-2"
+              />
+              <Skeleton
+                variant="text"
+                width="30%"
+                height={20}
+                className="mt-4"
+              />
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={40}
+                className="mt-2"
+              />
+              <Skeleton
+                variant="text"
+                width="30%"
+                height={20}
+                className="mt-4"
+              />
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={40}
+                className="mt-2"
+              />
+            </div>
+            <div className="w-1/3">
+              <Skeleton variant="text" width="50%" height={20} />
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={40}
+                className="mt-2"
+              />
+            </div>
+          </div>
+        </div>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
