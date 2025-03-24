@@ -5,6 +5,7 @@ import ConfirmDialog from "./ComfirmDialog";
 import CommentSection from "./CommentSection";
 import AddLabelsSection from "./Labels";
 import AttachmentSection from "./AttachmentSection";
+import ProtectedRoute from "./ProtectedRoute";
 
 export {
   Button,
@@ -14,4 +15,5 @@ export {
   CommentSection,
   AddLabelsSection,
   AttachmentSection,
+  ProtectedRoute,
 };

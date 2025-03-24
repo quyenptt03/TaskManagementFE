@@ -43,11 +43,11 @@ const CommentSection = ({ taskId }: { taskId: any }) => {
   };
   return (
     <div>
-      <h3 className="font-semibold">Comments</h3>
+      <h3 className="font-semibold mb-3">Comments</h3>
       <div className="flex">
         <TextField
-          placeholder="Add comment"
-          className="w-full mr-2"
+          placeholder="Add a comment"
+          className="w-full mr-2 text-sm"
           value={newComment.content}
           onChange={(e: any) =>
             setNewComment({
@@ -58,47 +58,33 @@ const CommentSection = ({ taskId }: { taskId: any }) => {
           }
         />
         <Button
-          theme="base"
+          theme="filled"
           type="button"
-          className="text-sm 3xl:px-10 laptop:py-2 mt-0 mb-0 w-fit"
+          className="text-sm w-fit"
           onClick={() => handleAddComment(newComment)}
         >
           Add
         </Button>
       </div>
-      <ul>
+      <ul className="mt-4">
         {taskComments.data && taskComments.data.length === 0 ? (
           <p>No comments yet</p>
         ) : (
           taskComments.data?.map((comment) => (
-            // <li key={comment.id}>
-            //   <div className="flex justify-between">
-            //     <div>
-            //       <AccountCircle style={{ color: "gray"   }} />
-            //     </div>
-            //     <span>{comment.userName}</span>
-            //     <span>{comment.content}</span>
-            //     <span>
-            //       {DateTime.fromISO(comment.createdAt)
-            //         .setZone("UTC+14")
-            //         .toFormat("dd-MM-yyyy HH:mm:ss")}
-            //     </span>
-            //   </div>
-            //   <button
-            //     type="button"
-            //     className="text-xs"
-            //     onClick={() => openDeleteDialog(comment.id)}
-            //   >
-            //     Delete
-            //   </button>
-            // </li>
             <li className="mb-4 border-top border-bottom border-solid border-black py-2">
               <div className="flex justify-between">
                 <div className="flex ">
                   <AccountCircle className="text-gray-200 text-4xl mr-2" />
                   <div>
-                    <p className="font-medium">{comment.userName}</p>
+                    <p className="font-medium text-sm">{comment.userName}</p>
                     <p className="text-gray-800">{comment.content}</p>
+                    <button
+                      type="button"
+                      className="text-xs font-medium hover:text-error-dark"
+                      onClick={() => openDeleteDialog(comment.id)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
                 <p className="text-xs text-gray-500">

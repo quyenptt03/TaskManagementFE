@@ -42,23 +42,33 @@ const AddLabelsSection: React.FC<{
 
   return (
     <div>
-      <Button type="button" onClick={handleOpen} theme="base">
+      <Button type="button" onClick={handleOpen} theme="noBg">
         + Add Labels
       </Button>
-      <Box mt={2}>
+      <Box>
         {tempSelectedLabels.map((label: any) => (
           <Chip
             key={label.id}
             label={label.name}
-            style={{ marginRight: "5px", marginBottom: "5px" }}
+            style={{
+              marginRight: "5px",
+              marginBottom: "5px",
+              borderRadius: "8px",
+            }}
           />
         ))}
       </Box>
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle>Select Labels</DialogTitle>
         <DialogContent>
+          <label
+            htmlFor="labels"
+            className="text-base font-medium capitalize mt-3"
+          >
+            Labels
+          </label>
+
           <FormControl fullWidth margin="dense">
-            <InputLabel>Labels</InputLabel>
             <Select
               multiple
               value={tempSelectedLabels.map((label: any) => label.id)}
